@@ -1,0 +1,10 @@
+#include <stdio.h>//standard IO	
+#include<conio.h>//console IO
+
+main() //where the prog starts
+{ //scope or block
+	printf("Hello, world!\n"); //tell complier where the sentence ends, \n means new line
+  
+  getchar();
+	return 0;
+}

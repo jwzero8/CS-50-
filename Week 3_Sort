@@ -1,0 +1,33 @@
+Reversed 10000
+> sort 1: real    0m0.375s
+> sort 2: real    0m0.175s
+> sort 3: real    0m0.184s
+
+Reversed 50000
+> sort 1: real    0m7.470s
+> sort 2: real    0m0.655s
+> sort 3: real    0m3.660s
+
+Sort 2>> Merged sort, shortest time
+
+Sorted 5000
+> sort 1: real    0m0.033s
+> sort 3: real    0m0.098s
+
+Sort 1>> Bubble sort as it runs faster than sort 3 with sorted data.
+
+// Answer file 
+
+ANSWER.TXT
+
+sort1 uses: bubble sort
+
+How do you know?: Take shorter time to sort sorted data than sort 3
+
+sort2 uses: merge sort
+
+How do you know?: Take shortest time to sort data among three algos.
+
+sort3 uses: selection sort
+
+How do you know?: Take more time to sort sorted data than sort 1.

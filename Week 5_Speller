@@ -1,0 +1,156 @@
+/* My reference links: Some ideas come from them , they should take the credit.
+https://www.journaldev.com/35238/hash-table-in-c-plus-plus
+https://www.youtube.com/watch?v=sz5XOuxy4GM
+https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/HashFuncExamp.html
+https://stackoverflow.com/questions/67020911/cs50-speller-keeps-prompting-free-double-free-detected-in-tcache-2
+reddit cs50 page and github repository as well */
+// Implements a dictionary's functionality
+
+#include <ctype.h> //tolower
+#include <stdbool.h>
+#include <string.h> // strcmp
+#include <strings.h> //strcasecmp
+#include <cs50.h> // strcmp
+#include "dictionary.h"
+#include <stdio.h> //fscanf
+#include <stdlib.h> //malloc
+
+// Represents a node in a hash table
+typedef struct node
+{
+    char word[LENGTH + 1];
+    struct node *next;
+}
+node;
+
+int counter = 0;
+// TODO: Choose number of buckets in hash table
+// My thought: make N = 26 by sorting words in alphabetical order
+const unsigned int N = 26;
+
+// Hash table
+// My thought: Allocate memory for node first
+// My thought: Then copy words and stuff to the nodes
+
+node *table[N];
+
+// Returns true if word is in dictionary, else false
+bool check(const char *word)
+{
+    // TODO
+    // My thought: if (word == array of dictionary.h) >> stop && return 0;
+    // My thought: set a variable called compare > for (int i = 0; i < size of node; i++)
+    // Brian:u Use strcasecmp>> compare case-insensitively
+    int hash_value = hash(word);
+    if (table[hash_value] == NULL)
+    {
+        return false;
+    }
+
+    else
+    {
+        node *p = table[hash_value];
+
+        for (node *tmp = p; tmp != NULL; tmp = tmp->next)
+        {
+
+
+       if (strcasecmp(tmp->word, word) == 0)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// Hashes word to a number
+unsigned int hash(const char *word)
+{
+    // TODO: Improve this hash function
+    // My thought: can use 1st letter, 2nd letter, hash table = 26, for both upper and lowercase>> use % 26
+    int raw_hash_value = 0;
+
+    // Note: error: comparison between pointer and integer ('char' and 'void *') [-Werror,-Wpointer-integer-compare]
+    // Can't write as word[i] != NULL
+    for (int i = 0; i < strlen(word); i++)
+    {
+        raw_hash_value = raw_hash_value + tolower(word[i]);
+        raw_hash_value = raw_hash_value % N;
+    }
+    return raw_hash_value;
+}
+
+// Loads dictionary into memory, returning true if successful, else false
+
+bool load(const char *dictionary)
+{
+    // TODO
+    // My thought:fopen > fread > fwrite, printf if xxx == true
+    // Brian's video: fopen, strcpy + fscanf, create hash list and hash value
+    // Need to use FILE instead of file for "file pointer"
+    FILE* file_ptr = fopen(dictionary, "r");
+    if (file_ptr == NULL)
+    {
+        return false;
+    }
+
+
+    char tmp_word[LENGTH + 1];
+
+    while (fscanf(file_ptr, "%s", tmp_word) != EOF)
+    {
+        node *tmp_node = malloc(sizeof(node));
+        counter++;
+        if (tmp_node == NULL)
+        {
+            return 1;
+        }
+        tmp_node->next = NULL;
+        strcpy(tmp_node->word, tmp_word);
+        int key = hash(tmp_node->word);
+
+        if(table[key] == NULL)
+        {
+            table[key] = tmp_node;
+        }
+
+        else
+        {
+            tmp_node->next = table[key];
+            table[key] = tmp_node;
+        }
+
+    }
+    fclose(file_ptr);
+    return true;
+}
+
+// Returns number of words in dictionary if loaded, else 0 if not yet loaded
+unsigned int size(void)
+{
+    // TODO
+    return counter;
+}
+
+// Unloads dictionary from memory, returning true if successful, else false
+bool unload(void)
+{
+    // TODO
+    // My thought: use free function, order matters
+    // Brian's video: create tmp point to the same linked list, cursor-> next untill NULL
+    node *tmp_1 = NULL;
+    node *tmp_2 = NULL;
+    for (int i = 0; i < N; i++)
+    {
+        tmp_1 = table[i];
+
+        while (tmp_1 != NULL)
+        {
+            tmp_2 = tmp_1;
+            tmp_1 = tmp_1->next;
+            free(tmp_2);
+        }
+    }
+    return true;
+}

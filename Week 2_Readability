@@ -1,0 +1,65 @@
+#include <cs50.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+
+// My thought: using space to count words needs to "compensate" 1 for the last word.
+int word_count;
+int letter_count;
+int sentence_count;
+
+int main(void)
+// My thought: set all the counters (letter, words, sentences)
+// My thought: treat input-text as arrays, use while loop to check
+// My thought: stop counting letters for " ", sentence ++ when ". " exists
+{
+
+   string text = get_string("Text: ");
+   for (int i = 0; i < strlen(text); i++)
+   {
+
+       if((text[i] >= 'a' && text[i] <= 'z') || (text[i] >= 'A' && text[i] <= 'Z'))
+       {
+           letter_count++;
+       }
+
+       else if(text[i] == ' ')
+       {
+           word_count++;
+       }
+
+       else if((text[i] == '!') || (text[i] == '?') || (text[i] == '.'))
+       {
+           sentence_count++;
+       }
+
+
+   }
+
+    word_count = word_count + 1;
+    printf("letter %i, word %i, sentence %i\n", letter_count, word_count, sentence_count);
+
+
+    float L = (100.0f / word_count) * letter_count;
+    float S = (100.0f / word_count) * sentence_count;
+    int index = round(0.0588 * L - 0.296 * S - 15.8);
+
+    if (index < 1)
+    {
+        printf("Before Grade 1\n");
+        return 0;
+    }
+
+    else if (index >= 16)
+    {
+        printf("Grade 16+\n");
+        return 0;
+    }
+
+    else
+    {
+        printf("Grade %i\n", index);
+        return 0;
+    }
+
+}

@@ -21,6 +21,8 @@ def main():
     # TODO: Find longest match of each STR in DNA sequence
     # My thought: For each STR in the STRs array, calcu
         for str in strs:
+            # Alternative approach
+            # longest_match(dna, strs)
             # My thought: index is the "i" in the longest_match function
             index = 0
             longest_seq = 0

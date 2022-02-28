@@ -1,0 +1,110 @@
+1.sql
+SELECT title FROM movies WHERE year = "2008";
+
+2.sql
+SELECT birth FROM people WHERE name = "Emma Stone";
+
+3.sql
+SELECT title FROM movies WHERE year >= "2018" ORDER BY title;
+
+4.sql
+SELECT COUNT(title) FROM movies WHERE id IN (SELECT movie_id FROM ratings WHERE rating LIKE "10.0");
+
+5.sql
+SELECT title, year FROM movies WHERE title LIKE "Harry Potter%" ORDER BY year;
+
+6.sql
+SELECT AVG(rating) FROM ratings WHERE movie_id IN (SELECT id FROM movies WHERE year = "2012");
+
+7.sql
+SELECT title ,rating FROM movies JOIN ratings ON movies.id = ratings.movie_id WHERE year = "2010" ORDER BY rating DESC, title;
+
+-- title, rating
+-- link ratings and movie table by movie_ID>> USE JOIn
+-- movies JOIN ratings ON movies.id = ratings.movie_id >A
+-- SELECT title FROM movies AND rating FROM ratings WHERE ((A) AND (year LIKE "2012")) ORDER BY rating
+
+8.sql
+SELECT name
+FROM stars JOIN people on stars.person_id = people.id
+WHERE movie_id = (SELECT id FROM movies WHERE title = "Toy Story");
+
+-- People who starred in Toy story
+-- star table, find person_id and movie_id
+-- people table, match id with person_id, goal is to show "name"
+-- movies table, match title "Toy Story" with movie_id
+-- Note: Alternative from youtube, we can X JOIN Y ON A = B JOIN Z ON C = D
+
+9.sql
+SELECT DISTINCT name
+FROM stars JOIN people ON stars.person_id = people.id
+JOIN movies ON movies.id = stars.movie_id
+WHERE year = "2004"
+ORDER BY birth;
+-- List names of people who staged movies in 2004
+-- From stars, movie_id and person_id
+-- From people, match person_id with id, goal is to show "name"
+-- From movies, match id with movie_id WHERE year = "2004"
+
+10.sql
+SELECT DISTINCT name
+FROM directors JOIN ratings ON directors.movie_id = ratings.movie_id
+JOIN people ON people.id = directors.person_id
+WHERE rating >= "9.0";
+-- List names of directors receive a rating >= 9.0
+-- From directors, we have person_id and movie_id
+-- From ratings, we have movie_id and rating (where >=9.0)
+-- From people, we have id, goal is the "name" here, DISTINCT required
+
+11.sql
+SELECT title
+FROM ratings JOIN stars ON ratings.movie_id = stars.movie_id
+JOIN movies ON movies.id = ratings.movie_id
+JOIN people ON people.id = stars.person_id
+WHERE name = "Chadwick Boseman"
+ORDER BY rating DESC
+LIMIT 5;
+-- List movies starred by Chadwick Boseman ORDER BY DESC rating LIMIT 5;
+-- FROM ratings, we have rating and movie_id
+-- FROM stars, we have movie_id and person_id
+-- FROM people, we have id(person) and name
+-- FROM movies, we have title and id(movie)
+
+12.sql
+SELECT title
+FROM movies JOIN stars ON movies.id = stars.movie_id
+JOIN people ON people.id = stars.person_id
+WHERE name = "Johnny Depp"
+INTERSECT
+SELECT title
+FROM movies JOIN stars ON movies.id = stars.movie_id
+JOIN people ON people.id = stars.person_id
+WHERE name = "Helena Bonham Carter";
+-- ***: INTERSECT for both conditions are happening
+-- List movies for BOTH Johnny Depp and Helena Bonham Carter starred
+-- FROM movies, we have title and id(movie)
+-- FROM stars, we have person_id and movie_id
+-- FROM people, we have id(star) and name
+
+13.sql
+SELECT DISTINCT name
+FROM movies JOIN stars ON movies.id = stars.movie_id
+JOIN people ON people.id = stars.person_id
+WHERE person_id != (SELECT id FROM people WHERE name = "Kevin Bacon" AND birth = "1958")
+AND person_id
+IN (SELECT person_id FROM stars
+WHERE movie_id IN (SELECT movie_id FROM stars
+WHERE person_id IN (SELECT id FROM people WHERE name = "Kevin Bacon" AND birth = "1958")));
+
+-- Similar to Q12, goal is to list names of people starred in movie Kevin Bacon done
+-- But Kevin Bacon cannot appear and he has to be the 1958 one
+-- WHERE person_id is in (K.B. movies from stars table)
+-- FROM stars, we have person_id and movie_id
+-- To select KB 1958,
+-- SELECT id FROM people
+-- WHERE name = "Kevin Bacon" AND birth = "1958"
+
+-- SELECT person_id != KB IN (person_ id in movies that KB appear as well)
+-- Movies that KB present = (SELECT movie_id FROM stars WHERE person_id = (SELECT id FROM people WHERE name = "Kevin Bacon" AND birth = "1958") )
+
+

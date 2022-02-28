@@ -1,0 +1,235 @@
+-- Keep a log of any SQL queries you execute as you solve the mystery.
+
+-- SELECT * FROM crime_scene_reports; >> id 295 (possible)/ 297 are the possible cases which happened on 7/28 at Humphrey Street
+SELECT * FROM crime_scene_reports
+WHERE month = 7 AND day = 28 AND STREET = "Humphrey Street";
+-- From words of 295 we know that witnesses mentioned the bakery >> take a look at interviews then
+
+SELECT * FROM interviews
+WHERE month = 7 AND day = 28;
+-- From interviews, we see the thief get into a car at the parking lot within 10 mins after 1015, FOOTAGE was mentioned,
+-- 163 Eugene mentioned he saw the thief earlier this morning getting money on Leggett Street
+-- Raymond said that thief plannning to take the earliest flight tmr. Thiefs asked someone to buy the ticket.
+-- Owner said thief whispered for 0.5 hr and never bought stuff
+-- Using the evidence above, we can see phone calls and atm_transaction
+
+SELECT * FROM atm_transactions
+WHERE month = 7 AND day = 28 AND atm_location = "Leggett Street" AND transaction_type = "withdraw";
+-- Watched atm records, not much info found but took a screencapture first
+/*
++----------------+--------+
+| account_number | amount |
++----------------+--------+
+| 28500762       | 48     |
+| 28296815       | 20     |
+| 76054385       | 60     |
+| 49610011       | 50     |
+| 16153065       | 80     |
+| 25506511       | 20     |
+| 81061156       | 30     |
+| 26013199       | 35     | */
+
+-- Go to airports to see early flight tmr
+SELECT * FROM airports;
+/*
++----+--------------+-----------------------------------------+---------------+
+| id | abbreviation |                full_name                |     city      |
++----+--------------+-----------------------------------------+---------------+
+| 1  | ORD          | O'Hare International Airport            | Chicago       |
+| 2  | PEK          | Beijing Capital International Airport   | Beijing       |
+| 3  | LAX          | Los Angeles International Airport       | Los Angeles   |
+| 4  | LGA          | LaGuardia Airport                       | New York City |
+| 5  | DFS          | Dallas/Fort Worth International Airport | Dallas        |
+| 6  | BOS          | Logan International Airport             | Boston        |
+| 7  | DXB          | Dubai International Airport             | Dubai         |
+| 8  | CSF          | Fiftyville Regional Airport             | Fiftyville    |
+| 9  | HND          | Tokyo International Airport             | Tokyo         |
+| 10 | CDG          | Charles de Gaulle Airport               | Paris         |
+| 11 | SFO          | San Francisco International Airport     | San Francisco |
+| 12 | DEL          | Indira Gandhi International Airport     | Delhi         |
++----+--------------+-----------------------------------------+---------------+ */
+
+--Not much info still, but we can link this with flight tommorrow
+SELECT * FROM flights
+WHERE month = 7 AND day = 29 AND origin_airport_id = 8 ORDER BY hour, minute;
+
+/*
++----+-------------------+------------------------+------+-------+-----+------+--------+
+| id | origin_airport_id | destination_airport_id | year | month | day | hour | minute |
++----+-------------------+------------------------+------+-------+-----+------+--------+
+| 36 | 8                 | 4                      | 2021 | 7     | 29  | 8    | 20     |
+| 43 | 8                 | 1                      | 2021 | 7     | 29  | 9    | 30     |
+| 23 | 8                 | 11                     | 2021 | 7     | 29  | 12   | 15     |
+| 53 | 8                 | 9                      | 2021 | 7     | 29  | 15   | 20     |
+| 18 | 8                 | 6                      | 2021 | 7     | 29  | 16   | 0      |
++----+-------------------+------------------------+------+-------+-----+------+--------+ */
+-- So destination id are listed, one of which is the answer (destination), and the one departs at 0820 is likely to be the answer with reference to interview.
+-- CREATE f_29 for sorting
+CREATE TABLE f_29 AS SELECT * FROM flights
+WHERE month = 7 AND day = 29 AND origin_airport_id = 8 AND destination_airport_id = 4;
+
+-- Go to phone calls, calls ard 0.5 hr, so filter out calls more than 0.75 hr shd be safe
+SELECT * FROM phone_calls
+WHERE month = "7" AND day = "28" AND duration <= 45 ORDER BY duration;
+/*
++-----+----------------+----------------+------+-------+-----+----------+
+| id  |     caller     |    receiver    | year | month | day | duration |
++-----+----------------+----------------+------+-------+-----+----------+
+| 224 | (499) 555-9472 | (892) 555-8872 | 2021 | 7     | 28  | 36       |
+| 261 | (031) 555-6622 | (910) 555-3251 | 2021 | 7     | 28  | 38       |
+| 254 | (286) 555-6063 | (676) 555-6554 | 2021 | 7     | 28  | 43       |
+| 233 | (367) 555-5533 | (375) 555-8161 | 2021 | 7     | 28  | 45       | */
+-- Caller and receiver number should be related to identities of accomplcie and thief. Mark it down first
+
+-- To figure out their identities, try to match phone numbers with PEOPLE table, do caller first
+SELECT phone_number, passport_number, name, license_plate
+FROM phone_calls JOIN people
+ON phone_calls.caller = people.phone_number
+WHERE month = "7" AND day = "28" AND duration <= 45;
+
+SELECT *
+FROM phone_calls JOIN people
+ON phone_calls.caller = people.phone_number
+WHERE month = "7" AND day = "28" AND duration <= 45;
+/*
++-----+----------------+----------------+------+-------+-----+----------+--------+--------+----------------+-----------------+---------------+
+| id  |     caller     |    receiver    | year | month | day | duration |   id   |  name  |  phone_number  | passport_number | license_plate |
++-----+----------------+----------------+------+-------+-----+----------+--------+--------+----------------+-----------------+---------------+
+| 224 | (499) 555-9472 | (892) 555-8872 | 2021 | 7     | 28  | 36       | 560886 | Kelsey | (499) 555-9472 | 8294398571      | 0NTHK55       |
+| 233 | (367) 555-5533 | (375) 555-8161 | 2021 | 7     | 28  | 45       | 686048 | Bruce  | (367) 555-5533 | 5773159633      | 94KL13X       |
+| 254 | (286) 555-6063 | (676) 555-6554 | 2021 | 7     | 28  | 43       | 449774 | Taylor | (286) 555-6063 | 1988161715      | 1106N58       |
+| 261 | (031) 555-6622 | (910) 555-3251 | 2021 | 7     | 28  | 38       | 907148 | Carina | (031) 555-6622 | 9628244268      | Q12B3Z3       |
++-----+----------------+----------------+------+-------+-----+----------+--------+--------+----------------+-----------------+---------------+ */
+
+-- Now, do the part of receiver
+SELECT *
+FROM phone_calls JOIN people
+ON phone_calls.receiver = people.phone_number
+WHERE month = "7" AND day = "28" AND duration <= 45;
+/*
++-----+----------------+----------------+------+-------+-----+----------+--------+------------+----------------+-----------------+---------------+
+| id  |     caller     |    receiver    | year | month | day | duration |   id   |    name    |  phone_number  | passport_number | license_plate |
++-----+----------------+----------------+------+-------+-----+----------+--------+------------+----------------+-----------------+---------------+
+| 224 | (499) 555-9472 | (892) 555-8872 | 2021 | 7     | 28  | 36       | 251693 | Larry      | (892) 555-8872 | 2312901747      | O268ZZ0       |
+| 233 | (367) 555-5533 | (375) 555-8161 | 2021 | 7     | 28  | 45       | 864400 | Robin      | (375) 555-8161 |                 | 4V16VO0       |
+| 254 | (286) 555-6063 | (676) 555-6554 | 2021 | 7     | 28  | 43       | 250277 | James      | (676) 555-6554 | 2438825627      | Q13SVG6       |
+| 261 | (031) 555-6622 | (910) 555-3251 | 2021 | 7     | 28  | 38       | 712712 | Jacqueline | (910) 555-3251 |                 | 43V0R5D       |
++-----+----------------+----------------+------+-------+-----+----------+--------+------------+----------------+-----------------+---------------+*/
+
+-- We also have some info about license_plate number,
+-- so cross-check with those license plate list to see is there any match
+-- Go to bakery_security_logs
+SELECT license_plate
+FROM bakery_security_logs
+WHERE license_plate IN (SELECT license_plate FROM people)
+AND month = "7" AND day = "28" AND hour = "10" AND minute >= "15" AND minute <= "25" AND activity LIKE "exit";
+-- Mark down the table as bakery_license
+CREATE TABLE bakery_license
+AS SELECT license_plate
+FROM bakery_security_logs
+WHERE license_plate IN (SELECT license_plate FROM people)
+AND month = "7" AND day = "28" AND hour = "10" AND minute >= "15" AND minute <= "25" AND activity LIKE "exit";
+
+-- Cross-check with phone-number of callers
+SELECT DISTINCT phone_number, passport_number, name
+FROM people JOIN bakery_license
+ON bakery_license.license_plate = people.license_plate;
+
+-- Mark as suspect table
+CREATE TABLE suspect AS
+SELECT DISTINCT phone_number, passport_number, name
+FROM people JOIN bakery_license
+ON bakery_license.license_plate = people.license_plate;
+
+-- So now, by gathering all the info, we should get to the last stage
+-- By using the suspect table(passport_number) to cross_check with the passengers table (flight_number)
+-- f_29(id) can get the passengers(flight_id)
+SELECT name, passport_number FROM suspect
+WHERE passport_number
+IN (SELECT passport_number
+FROM passengers JOIN f_29
+ON passengers.flight_id = f_29.id);
+/*
++--------+-----------------+
+|  name  | passport_number |
++--------+-----------------+
+| Sofia  | 1695452385      |
+| Luca   | 8496433585      |
+| Kelsey | 8294398571      |
+| Bruce  | 5773159633      |
++--------+-----------------+ */
+
+-- Mark as suspect_last
+CREATE TABLE suspect_last
+AS
+SELECT name, passport_number FROM suspect
+WHERE passport_number
+IN (SELECT passport_number
+FROM passengers JOIN f_29
+ON passengers.flight_id = f_29.id);
+
+-- There is still a list, so we have to rely on the ATM record to see who the thief is
+-- Account number has been done in the earlier section
+-- Now is to link it with bank_account table to get person_id >> Then go to people table
+-- people table(id) can get the name and passport>> check with suspect_last
+SELECT person_id FROM bank_accounts
+WHERE account_number IN (SELECT account_number FROM atm_transactions
+WHERE month = 7
+AND day = 28
+AND atm_location = "Leggett Street"
+AND transaction_type = "withdraw");
+/*
++-----------+
+| person_id |
++-----------+
+| 686048    |
+| 514354    |
+| 458378    |
+| 395717    |
+| 396669    |
+| 467400    |
+| 449774    |
+| 438727    |
++-----------+*/
+
+-- So these should be the suspect
+SELECT name, passport_number
+FROM people
+WHERE id
+IN (SELECT person_id FROM bank_accounts
+WHERE account_number IN (SELECT account_number FROM atm_transactions
+WHERE month = 7
+AND day = 28
+AND atm_location = "Leggett Street"
+AND transaction_type = "withdraw"));
+
+-- Mark as suspect_atm
+CREATE TABLE suspect_atm
+AS SELECT name, passport_number
+FROM people
+WHERE id
+IN (SELECT person_id FROM bank_accounts
+WHERE account_number IN (SELECT account_number FROM atm_transactions
+WHERE month = 7
+AND day = 28
+AND atm_location = "Leggett Street"
+AND transaction_type = "withdraw"));
+
+-- Final answer is coming
+-- PS: I left the clue that the crime happened at 1015, gonna make changes to see the answer
+SELECT name, passport_number
+FROM suspect_last
+WHERE passport_number
+IN (SELECT passport_number FROM suspect_atm)
+ORDER BY name;
+
+/*
++-------+-----------------+
+| name  | passport_number |
++-------+-----------------+
+| Bruce | 5773159633      |
+| Luca  | 8496433585      |
++-------+-----------------+ */
+-- The answer is Bruce but not Luna. As Bruce is the one appears in the list of caller/receiver.
+-- He is going to LaGuardia Airport / New York City
+-- Accomplice should be Robin with reference to the 45-minute call duration.

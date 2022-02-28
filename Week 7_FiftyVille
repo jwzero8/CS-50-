@@ -230,6 +230,6 @@ ORDER BY name;
 | Bruce | 5773159633      |
 | Luca  | 8496433585      |
 +-------+-----------------+ */
--- The answer is Bruce but not Luna. As Bruce is the one appears in the list of caller/receiver.
+-- The answer is Bruce but not Luca. As Bruce is the one appears in the list of caller/receiver.
 -- He is going to LaGuardia Airport / New York City
 -- Accomplice should be Robin with reference to the 45-minute call duration.

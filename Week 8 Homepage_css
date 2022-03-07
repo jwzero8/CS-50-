@@ -1,0 +1,37 @@
+.centered {
+    text-align: center;
+}
+
+.large {
+    font-size: large;
+}
+
+/* WA stands for white album */
+#wa {
+    font-size: 20px;
+    font-style: oblique, bold;
+    font-variant: small-caps;
+    color: indigo;
+    opacity: 1.2;
+
+}
+
+#link {
+    font-size: bold;
+}
+
+div {
+    word-spacing: 10px;
+}
+
+body {
+    background-image: url("https://images8.alphacoders.com/750/thumb-1920-750844.png");
+    opacity: 0.8;
+    background-size: auto;
+}
+
+#first {
+    font-size: 30px;
+    font-style: italic;
+    font-family: "cursive";
+}

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <link href="styles.css" rel="stylesheet">
+        <title>Jordan's CS50 first Try LMAO</title>
+        <script type="text/javascript">
+        // Note: DOMContentLoaded is very important, load things first, do functions later.
+        // Note: Here I do things with my buttons
+        // Source code credit to Ben Taylor and mattytommo @Stackoverflow
+        // Note: in the button tags, redirect() function is no more using and i just left them there
+        // Note: title = tab name, head tag = setting all stuff like JS, meta......
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("home").onclick = function () {
+                location.href = "https://jwzero8-code50-96365746-v6wx5vrwjhxxxq-8080.githubpreview.dev/index.html";
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("pictures").onclick = function () {
+                location.href = "Pictures.html";
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("songs").onclick = function () {
+                location.href = "Songs.html";
+            }
+        });
+        
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("guess").onclick = function () {
+                location.href = "Guess.html";
+            }
+        });
+
+        </script>
+    </head>
+    <main>
+    <body class = centered >
+        <div font-size: 60px>
+        <p id ="first" style= "color:indigo">Hello, homepage</p>
+        <h1> CS50, I love you so much but it is tough </h1>
+        <h2> First, I would like to give a big thanks to course tutors, namely, David, Brian and Doug.</h2>
+        <h3> Visit <a href = "https://cs50.harvard.edu/x/2022/"> CS50 Course webpage</a> to look for their faces:D<h3>
+        </div>
+        <!-- Note: &nbsp; (no-break space character) is used for creating space margin between paragraphs-->
+        <!-- Note: you can use CSS to deal with word spacing, e.g., p { word-spacing: 40px; } -->
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        &nbsp;
+
+        <div class="container-fluid">
+        <h3> Here are some of the task that I thought both challenging and interesting in CS50 so far.
+        </div>
+
+        <div class="container-fluid">
+        <h4> Here is my work. Try to have a click of them </h4>
+        <button type="button" id = "home" class="btn btn-outline-danger" onClick="redirect()">Home page</button>
+        <button type="button" id = "pictures"class="btn btn-outline-primary" onClick="redirect()">Pictures</button>
+        <button type="button" id = "songs" class="btn btn-outline-info" onClick="redirect()">Songs</button>
+        <button type="button" id = "guess" class="btn btn-outline-warning" onClick="redirect()">Guess</button>
+        <button type="button" class="btn btn-outline-success" onClick="showAlert()">Useless button</button>
+        <!-- Note: Way to show alert. Can be used with onClick onLoad -->
+        <script>
+        function showAlert() {
+        alert ("Hi Auntie!");
+        }
+        </script>
+        </div>
+
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        &nbsp;
+
+        <div id = "wa">
+        <p> Here I would like to use songs from White Album to let visitors (aka you guys) know this masterpiece. </p>
+        <img src = "https://i.pinimg.com/736x/3a/98/18/3a9818ae47f6243bfdd510f9482fcfce.jpg" opacity = 0.5>
+        <p id = "link" class = "center">Click <a href = "https://www.youtube.com/watch?v=j3iKPTjW_1E">here</a> to listen my favourite song</p>
+        </div>
+    </body>
+    </main>
+</html>

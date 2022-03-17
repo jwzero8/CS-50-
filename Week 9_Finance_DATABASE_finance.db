@@ -1,0 +1,24 @@
+	
+  
+  TABLE trade
+  Column #	Field	Type	Not NULL	Default Value	Primary Key
+	Edit	Delete	0	id	INTEGER	Yes	None	Yes
+	Edit	Delete	1	user_id	INTEGER	Yes	None	No
+	Edit	Delete	2	date	DATETIME	No	None	No
+	Edit	Delete	3	symbol	TEXT	No	None	No
+	Edit	Delete	4	share	INTEGER	No	None	No
+	Edit	Delete	5	price	REAL	No	None	No
+	Edit	Delete	6	turnover	REAL	No	None	No
+	Edit	Delete	7	transaction_type	TEXT	No	None	No
+  
+  -----------------------------------------------------
+  
+  TABLE users
+  
+  
+Column #	Field	Type	Not NULL	Default Value	Primary Key
+	Edit	Delete	0	id	INTEGER	Yes	None	Yes
+	Edit	Delete	1	username	TEXT	Yes	None	No
+	Edit	Delete	2	hash	TEXT	Yes	None	No
+	Edit	Delete	3	cash	NUMERIC	Yes	10000.00	No
+  

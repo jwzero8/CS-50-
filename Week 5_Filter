@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+
+typedef uint8_t BYTE;
+
+int main(int argc, char *argv[])
+{
+    // My thought: malloc and free
+    // argc ~2 else return 1
+    // If failed to open >> return 1
+    // Use buffer array
+    // Note: For this assignment, I relied heavily on other's oonline tutorial.
+    if (argc != 2)
+    {
+        printf("You should have exactly 2 arguments, AKA,  ./recover IMG. \n");
+        return 1;
+    }
+
+    FILE *f = fopen(argv[1], "r");
+
+    if (f == NULL)
+    {
+        printf("Invalid file");
+        return 1;
+    }
+
+    // Note: for having 512 bytes memory for files
+    unsigned char buffer[512];
+    FILE *f_out = NULL;
+
+    char *filename = malloc(8 * sizeof(char));
+
+    int image_count = 0;
+
+    while (fread(buffer, sizeof(char), 512, f))
+    {
+
+        if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff
+        && (buffer[3] & 0xf0) == 0xe0)
+        {
+            sprintf(filename, "%03i.jpg", image_count);
+
+            f_out = fopen(filename, "w");
+
+            image_count++;
+        }
+
+        if (f_out != NULL)
+        {
+            fwrite(buffer, sizeof(char), 512, f_out);
+        }
+    }
+    free(filename);
+    fclose(f);
+    fclose(f_out);
+
+    return 0;
+}
